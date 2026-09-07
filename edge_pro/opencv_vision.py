@@ -131,6 +131,7 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
     def reset_reference_frame(self, frame: Optional[np.ndarray] = None) -> None:
         """Resets or updates the static background reference starfield."""
         self._reference_frame = frame.copy() if frame is not None else None
+        self._previous_frame = frame.copy() if frame is not None else None
         logger.info("[Vision] Background reference starfield frame updated.")
 
     def process_frame(
@@ -256,6 +257,11 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
 
     def _compute_differenced_image(self, current: np.ndarray) -> np.ndarray:
         """Applies consecutive, reference, or hybrid frame subtraction."""
+        if self._reference_frame is None:
+            self._reference_frame = current.copy()
+        if self._previous_frame is None:
+            self._previous_frame = current.copy()
+
         if self.differencing_mode == "consecutive":
             diff = cv2.absdiff(self._previous_frame, current)
         elif self.differencing_mode == "reference":

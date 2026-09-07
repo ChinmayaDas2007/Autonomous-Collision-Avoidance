@@ -420,6 +420,7 @@ class EphemerisProcessor:
         primary_tle: Tuple[str, str] = None,
         debris_tle: Tuple[str, str] = None,
         simulate_eclipse: bool = False,
+        force_sunlit: bool = False,
     ) -> dict:
         """
         Executes complete ephemeris preprocessing:
@@ -445,6 +446,9 @@ class EphemerisProcessor:
         if simulate_eclipse:
             logger.warning("[SIMULATION OVERRIDE] Artificially forcing is_in_umbra=True for eclipse testing.")
             umbra["is_in_umbra"] = True
+        elif force_sunlit:
+            logger.info("[SIMULATION OVERRIDE] Forcing is_in_umbra=False for sunlit optical tracking testing.")
+            umbra["is_in_umbra"] = False
 
         return {
             "primary_eci_km":      ephem["primary_eci_km"],
@@ -882,6 +886,7 @@ class GroundAINode:
         uplink_host: str = None,
         uplink_port: int = None,
         simulate_eclipse: bool = False,
+        force_sunlit: bool = False,
     ) -> dict:
         """Executes a single cycle synchronously and publishes output."""
         tca_str = conjunction["time_of_closest_approach"]
@@ -894,6 +899,7 @@ class GroundAINode:
             primary_tle=primary_tle,
             debris_tle=debris_tle,
             simulate_eclipse=simulate_eclipse,
+            force_sunlit=force_sunlit,
         )
         weather = self.ingestor.poll()
         features = self.feature_builder.build(weather, conjunction)
