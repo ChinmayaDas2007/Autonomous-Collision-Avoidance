@@ -179,7 +179,3 @@ python3 -m unittest discover -s gnd_ops -p "test_*.py" -v
 python3 -m unittest discover -s edge_pro -p "test_*.py" -v
 
 # 3. Run Full 3-Node End-to-End Integration Test
-python3 test_three_node_e2e.py -v
-```
-
-All 49 tests pass with 100% test coverage across mathematical propagation, network framing, FSM transitions, frame differencing, danger corridor ray tracing, and Active-Active burn optimization.
