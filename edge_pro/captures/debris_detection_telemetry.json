@@ -1,0 +1,41 @@
+{
+  "event": "SLEW_AND_OPTICAL_CAPTURE_COMPLETE",
+  "timestamp_utc": "2026-09-08T14:02:15Z",
+  "primary_asset": "Kessler_Sat_1",
+  "target_asset": "Debris_Obj_8492",
+  "slew_telemetry": {
+    "duration_seconds": 116.7,
+    "final_pointing_error_deg": 0.0484,
+    "status": "BORESIGHT_LOCKED"
+  },
+  "optical_telemetry": {
+    "image_artifact": "/Users/chinmaya/Desktop/Project_Kessler/edge_pro/captures/debris_optical_frame_20260908T140215Z.png",
+    "resolution": [
+      512,
+      512
+    ],
+    "exposure_ms": 100,
+    "target_detection": {
+      "target_asset": "Debris_Obj_8492",
+      "range_km": 2131.0,
+      "pointing_error_deg": 0.0484,
+      "streak_start_px": [
+        335,
+        220
+      ],
+      "streak_end_px": [
+        372,
+        195
+      ],
+      "streak_length_px": 44.65,
+      "streak_centroid_px": {
+        "x": 353.5,
+        "y": 207.5
+      },
+      "snr_db": 23.4,
+      "exposure_ms": 100,
+      "field_of_view_deg": 15.0
+    }
+  },
+  "action_recommendation": "VERIFY_COLLISION_GEOMETRY_AND_COMMIT_DELTA_V"
+}
