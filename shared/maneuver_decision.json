@@ -1,34 +1,10 @@
 {
   "type": "MANEUVER_DECISION",
-  "decision": "EXECUTE_BURN",
-  "decision_status": "GO",
-  "responsibility": "self",
-  "corridor_breached": true,
-  "target_asset": "Debris_Obj_8492",
-  "timestamp_utc": "2026-09-07T22:15:49.099390Z",
-  "rationale": "Uncooperative debris 'Debris_Obj_8492' on direct collision course. Executing autonomous avoidance burn: Delta-V = 0.350 m/s.",
-  "delta_v_vector_mps": [
-    0.0,
-    0.35,
-    -0.0
-  ],
-  "delta_v_magnitude_mps": 0.35,
-  "burn_epoch_utc": "2026-09-08T00:35:45.203664Z",
-  "scoring_audit": {
-    "conjunction_type": "SPACECRAFT_VS_DEBRIS",
-    "local_asset": "KesslerSat-1",
-    "local_score": 0.44,
-    "local_factors": {
-      "cost_lifetime": 0.55,
-      "cost_delta_v": 0.2,
-      "cost_priority": 0.75,
-      "cost_downtime": 0.3
-    },
-    "weights": {
-      "w_lifetime": 0.25,
-      "w_delta_v": 0.35,
-      "w_priority": 0.25,
-      "w_downtime": 0.15
-    }
-  }
+  "decision": "NO_MANEUVER_REQUIRED",
+  "decision_status": "NO_GO",
+  "responsibility": "NONE",
+  "corridor_breached": false,
+  "target_asset": "Debris_Obj_9914",
+  "timestamp_utc": "2026-09-07T22:26:46.321524Z",
+  "rationale": "Optical streak tracking confirms debris trajectory misses 3D safety corridor by 2200.0 m. False positive radar alarm eliminated. Conserving fuel and maintaining nominal mission orbit."
 }

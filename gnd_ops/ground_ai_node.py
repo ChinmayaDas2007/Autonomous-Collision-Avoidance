@@ -52,6 +52,10 @@ logging.basicConfig(
 logger = logging.getLogger("ground_ai_node")
 
 
+# Project root directory detection:
+_FILE_PATH = Path(__file__).resolve()
+WORKSPACE_ROOT = _FILE_PATH.parent.parent if _FILE_PATH.parent.name == "gnd_ops" else _FILE_PATH.parent
+
 # ── Configuration Defaults ───────────────────────────────────────────────────
 CONFIG = {
     # NOAA space-weather endpoints (live)
@@ -60,9 +64,9 @@ CONFIG = {
     "poll_interval_sec": 60,
     "http_timeout_sec":  5,
     # File transport
-    "shared_dir":      Path("shared"),
-    "cdm_output_path": Path("shared/cdm_packet.json"),
-    "initial_ephemeris_path": Path("shared/initial_ephemeris.json"),
+    "shared_dir":      WORKSPACE_ROOT / "shared",
+    "cdm_output_path": WORKSPACE_ROOT / "shared" / "cdm_packet.json",
+    "initial_ephemeris_path": WORKSPACE_ROOT / "shared" / "initial_ephemeris.json",
     # TCP broadcast server (for local dashboard/debug monitors)
     "tcp_broadcast_host": "127.0.0.1",
     "tcp_broadcast_port": 8765,
@@ -70,7 +74,7 @@ CONFIG = {
     "edge_uplink_host": "127.0.0.1",
     "edge_uplink_port": 5555,
     # XGBoost model path
-    "model_path": Path("models/drag_xgb_model.json"),
+    "model_path": WORKSPACE_ROOT / "models" / "drag_xgb_model.json",
     # Conservative quiet-sun defaults
     "default_f107": 150.0,
     "default_kp":   3.0,
@@ -80,7 +84,7 @@ CONFIG = {
     # Action decision threshold
     "optical_confirmation_multiplier_threshold": 1.15,
     # Skyfield ephemeris cache dir
-    "skyfield_data_dir": Path("skyfield_data"),
+    "skyfield_data_dir": WORKSPACE_ROOT / "skyfield_data",
     # Earth radius for cylindrical umbra approximation (km)
     "earth_radius_km": 6371.0,
     # Action enum preference: "RECOMMEND_OPTICAL_CONFIRMATION" or "PROCEED_OPTICAL_TRACK"

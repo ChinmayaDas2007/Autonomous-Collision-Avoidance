@@ -1,6 +1,6 @@
 {
   "command": "SLEW_TO_TARGET",
-  "target_asset": "Debris_Obj_8492",
-  "execute_at_utc": "2026-09-07T22:15:46.203664Z",
+  "target_asset": "Debris_Obj_9914",
+  "execute_at_utc": "2026-09-07T22:26:42.069796Z",
   "sensor_mode": "OPTICAL_TRACKING"
 }
