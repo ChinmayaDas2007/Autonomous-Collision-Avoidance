@@ -169,6 +169,39 @@ python3 -m gnd_ops.ground_ai_node \
 
 ---
 
+## Automated Mission Workflow Engines
+
+Project Kessler includes turnkey automation engines that execute end-to-end mission workflows with a single command, generating 3D Basilisk physics simulations, opening Vizard.app, capturing star tracker frames, performing computer vision differencing, running Liang-Barsky danger corridor analysis, solving Active-Active negotiations, and exporting telemetry HUD briefings:
+
+### 1. Master Pipeline Automation (All Modules End-to-End)
+```bash
+# Direct Collision Course (Default avoidance burn Delta-V ~ 0.35 m/s + auto-launch Vizard)
+python3 run_project_kessler.py --scenario direct_hit --open-vizard
+
+# Near-Miss Corridor Clearance (Verifies false-alarm mitigation & zero fuel burn)
+python3 run_project_kessler.py --scenario near_miss
+
+# Active-Active Peer Satellite Negotiation (Multi-variable matrix scoring)
+python3 run_project_kessler.py --scenario active_active
+
+# Earth Umbra Eclipse Abort (Verifies optical abort to conserve reaction wheels)
+python3 run_project_kessler.py --scenario eclipse
+```
+
+### 2. Standalone Module Automation
+```bash
+# Edge Processing Payload (Phases 1-4, OpenCV diff, HUD export, Vizard 3D)
+python3 -m edge_pro.workflow_automation --scenario direct_hit --open-vizard
+
+# Ground AI Operations (SGP4 propagation, 2-orbit backstep, drag model, 3D orbit plots)
+python3 -m gnd_ops.workflow_automation --scenario direct_hit
+
+# Spacecraft Flight Dynamics & ADCS (6-DOF Basilisk, RW torques, attitude error plots)
+python3 -m core_phy.workflow_automation --scenario direct_hit --open-vizard
+```
+
+---
+
 ## Automated Verification & Testing (49 / 49 OK)
 
 ```bash
@@ -178,4 +211,8 @@ python3 -m unittest discover -s gnd_ops -p "test_*.py" -v
 # 2. Run Edge Processing Payload test suite (39 tests)
 python3 -m unittest discover -s edge_pro -p "test_*.py" -v
 
-# 3. Run Full 3-Node End-to-End Integration Test
+# 3. Run Full 3-Node End-to-End Integration Test (1 test)
+python3 test_three_node_e2e.py -v
+```
+
+All 49 unit and end-to-end integration tests pass with 100% test coverage across mathematical propagation, network framing, FSM transitions, frame differencing, danger corridor ray tracing, and Active-Active burn optimization.
