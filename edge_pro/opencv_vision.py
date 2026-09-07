@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 import json
 import logging
 import math
+import os
+from pathlib import Path
 import struct
 import time
 from typing import Callable, List, Optional, Tuple, Deque
@@ -31,7 +33,7 @@ except ImportError:
     np = None
     OPENCV_AVAILABLE = False
 
-from edge_pro.vision_interface import VisionPipelineInterface, DebrisDetection
+from edge_pro.vision_interface import VisionPipelineInterface, DebrisDetection, _BoolCallable
 
 logger = logging.getLogger("edge_pro.vision.opencv")
 
@@ -71,6 +73,7 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
         self._attitude_locked: bool = False
         self._reference_frame: Optional[np.ndarray] = None
         self._previous_frame: Optional[np.ndarray] = None
+        self._current_frame: Optional[np.ndarray] = None
         self._frame_count: int = 0
 
         # Circular buffer of timestamped detections: (timestamp_sec, cX, cY)
@@ -79,10 +82,14 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
         # Network stream receiver task handle
         self._stream_task: Optional[asyncio.Task] = None
         self._stream_running: bool = False
+        self._detections: List[DebrisDetection] = []
 
     @property
-    def is_active(self) -> bool:
-        return self._active
+    def is_active(self) -> _BoolCallable:
+        return _BoolCallable(1 if self._active else 0)
+
+    def get_detections(self) -> List[DebrisDetection]:
+        return list(self._detections)
 
     @property
     def attitude_locked(self) -> bool:
@@ -98,8 +105,10 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
         self.target_asset = target_asset
         self._reference_frame = None
         self._previous_frame = None
+        self._current_frame = None
         self._frame_count = 0
         self._history.clear()
+        self._detections.clear()
         logger.info(f"[Vision] Optical sensor armed for target asset: '{target_asset}'")
 
     async def start_tracking(self) -> None:
@@ -140,6 +149,7 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
         if len(frame_gray.shape) == 3:
             frame_gray = cv2.cvtColor(frame_gray, cv2.COLOR_BGR2GRAY)
 
+        self._current_frame = frame_gray.copy()
         now_sec = current_time or time.time()
         self._frame_count += 1
 
@@ -237,6 +247,8 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
             f"  Heading:  {detection.heading_angle_deg}° | SNR: {detection.intensity_snr} dB"
         )
 
+        self._detections.append(detection)
+
         if self.on_detection_callback:
             self.on_detection_callback(detection)
 
@@ -274,6 +286,20 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
         heading_deg = math.degrees(math.atan2(vy, vx))
 
         return vx, vy, speed, heading_deg
+
+    def start_stream_client(self, host: str = "127.0.0.1", port: int = 5000) -> None:
+        """Starts background TCP optical stream client task."""
+        if self._stream_task is None or self._stream_task.done():
+            self._stream_running = True
+            self._stream_task = asyncio.create_task(
+                self.run_tcp_stream_client(host=host, port=port)
+            )
+
+    def stop_stream_client(self) -> None:
+        """Stops background TCP optical stream client task."""
+        self._stream_running = False
+        if self._stream_task and not self._stream_task.done():
+            self._stream_task.cancel()
 
     async def run_tcp_stream_client(
         self, host: str = "127.0.0.1", port: int = 5000, retry_delay: float = 2.0
@@ -343,3 +369,88 @@ class OpenCVVisionPipeline(VisionPipelineInterface):
                         pass
 
         logger.info("[Vision TCP] Ingestion client stopped.")
+
+    def render_and_save_hud_frame(
+        self,
+        output_path: str,
+        corridor_bounds: Optional[Tuple[float, float, float, float]] = None,
+        detection: Optional[DebrisDetection] = None,
+        is_breached: bool = False,
+        action_decision: str = "PENDING",
+    ) -> bool:
+        """
+        Renders the 2D 'Software Reality' monitor frame with:
+          - Danger Corridor AABB box (Green = Clear, Red = Breach)
+          - Detected debris centroid (cyan circle)
+          - Directed velocity vector arrow (yellow)
+          - Mission status HUD telemetry overlay
+        Saves atomically to output_path for Streamlit Dashboard polling.
+        """
+        if not OPENCV_AVAILABLE:
+            return False
+
+        # Base frame: use current frame, reference frame, or blank canvas
+        base = self._current_frame if self._current_frame is not None else self._reference_frame
+        if base is None:
+            base = np.zeros((480, 640), dtype=np.uint8)
+
+        if len(base.shape) == 2:
+            hud = cv2.cvtColor(base, cv2.COLOR_GRAY2BGR)
+        else:
+            hud = base.copy()
+
+        # 1. Draw Danger Corridor Box
+        if corridor_bounds is not None:
+            min_u, min_v, max_u, max_v = [int(round(c)) for c in corridor_bounds]
+            box_color = (0, 0, 255) if is_breached else (0, 255, 0)
+            cv2.rectangle(hud, (min_u, min_v), (max_u, max_v), box_color, 2)
+            label = "DANGER CORRIDOR [BREACH]" if is_breached else "DANGER CORRIDOR [SECURE]"
+            cv2.putText(hud, label, (min_u, max(15, min_v - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.45, box_color, 1)
+
+        # 2. Draw Debris Centroid and Velocity Vector
+        det = detection or (self._detections[-1] if self._detections else None)
+        if det and det.centroid_x is not None and det.centroid_y is not None:
+            cx, cy = int(round(det.centroid_x)), int(round(det.centroid_y))
+            cv2.circle(hud, (cx, cy), 5, (255, 255, 0), -1)
+            cv2.circle(hud, (cx, cy), 12, (255, 255, 0), 1)
+
+            if det.velocity_vx is not None and det.velocity_vy is not None:
+                arrow_end = (
+                    int(round(cx + det.velocity_vx * 2.5)),
+                    int(round(cy + det.velocity_vy * 2.5)),
+                )
+                cv2.arrowedLine(hud, (cx, cy), arrow_end, (0, 255, 255), 2, tipLength=0.3)
+                vel_text = f"V=[{det.velocity_vx:.1f}, {det.velocity_vy:.1f}] px/s"
+                cv2.putText(hud, vel_text, (cx + 15, cy - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
+
+        # 3. Top Banner Overlay (Telemetry HUD)
+        cv2.rectangle(hud, (0, 0), (hud.shape[1], 35), (20, 20, 20), -1)
+        status_color = (0, 0, 255) if action_decision == "EXECUTE_BURN" else (0, 255, 0)
+        cv2.putText(
+            hud,
+            f"PROJECT KESSLER AOID | ACTION: {action_decision}",
+            (10, 22),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            status_color,
+            2,
+        )
+        ts = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+        cv2.putText(hud, ts, (hud.shape[1] - 110, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (200, 200, 200), 1)
+
+        # 4. Save Atomically
+        try:
+            out_file = Path(output_path)
+            out_file.parent.mkdir(parents=True, exist_ok=True)
+            tmp_file = out_file.with_suffix(".tmp.jpg")
+            cv2.imwrite(str(tmp_file), hud)
+            os.replace(str(tmp_file), str(out_file))
+            logger.info("Saved Software Reality HUD frame to %s", out_file)
+            return True
+        except Exception as err:
+            logger.error("Failed to save HUD frame (%s)", err)
+            return False
+
+
+# Backward compatibility alias
+OpenCVVisionProcessor = OpenCVVisionPipeline

@@ -65,6 +65,16 @@ class VisionPipelineInterface(ABC):
         """Returns True if optical tracking is actively executing."""
         pass
 
+    def get_detections(self) -> List[DebrisDetection]:
+        """Returns the list of detections extracted during tracking."""
+        return []
+
+
+class _BoolCallable(int):
+    """Allows is_active to be evaluated both as a boolean attribute and as a callable function."""
+    def __call__(self) -> bool:
+        return bool(self)
+
 
 class MockVisionPipeline(VisionPipelineInterface):
     """
@@ -76,9 +86,11 @@ class MockVisionPipeline(VisionPipelineInterface):
     def __init__(self):
         self._active: bool = False
         self._target_asset: Optional[str] = None
+        self._detections: List[DebrisDetection] = []
 
     async def arm_sensor(self, target_asset: str) -> None:
         self._target_asset = target_asset
+        self._detections.clear()
         logger.info(f"[Vision Hook] Optical Star Tracker armed for asset: {target_asset}")
 
     async def start_tracking(self) -> None:
@@ -92,12 +104,16 @@ class MockVisionPipeline(VisionPipelineInterface):
         self._active = False
         logger.info("[Vision Hook] Optical tracking DISENGAGED. Frame buffers flushed.")
 
-    def is_active(self) -> bool:
-        return self._active
+    @property
+    def is_active(self) -> _BoolCallable:
+        return _BoolCallable(1 if self._active else 0)
+
+    def get_detections(self) -> List[DebrisDetection]:
+        return list(self._detections)
 
     def simulate_detection(self, x: float = 256.0, y: float = 256.0) -> DebrisDetection:
         """Helper to inject a synthetic detection event for testing Phase 1 integration."""
-        return DebrisDetection(
+        det = DebrisDetection(
             detected=True,
             centroid_x=x,
             centroid_y=y,
@@ -105,3 +121,5 @@ class MockVisionPipeline(VisionPipelineInterface):
             timestamp_utc=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             target_asset=self._target_asset,
         )
+        self._detections.append(det)
+        return det

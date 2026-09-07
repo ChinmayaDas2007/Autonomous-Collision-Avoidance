@@ -133,6 +133,8 @@ class TCPIngestServer:
 
         except asyncio.CancelledError:
             pass
+        except (ConnectionResetError, BrokenPipeError):
+            logger.info(f"[Ingest] Ground AI node {client_addr} closed connection.")
         except Exception as ex:
             logger.exception(f"[Ingest] Exception handling client {client_addr}: {ex}")
         finally:

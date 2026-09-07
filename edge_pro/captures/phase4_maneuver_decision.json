@@ -1,0 +1,34 @@
+{
+  "type": "MANEUVER_DECISION",
+  "decision": "EXECUTE_BURN",
+  "decision_status": "GO",
+  "responsibility": "self",
+  "corridor_breached": true,
+  "target_asset": "Debris_Obj_8492",
+  "timestamp_utc": "2026-09-07T17:24:18.301441Z",
+  "rationale": "Uncooperative debris 'Debris_Obj_8492' on direct collision course. Executing autonomous avoidance burn: Delta-V = 0.350 m/s.",
+  "delta_v_vector_mps": [
+    0.19829,
+    -0.28841,
+    0.0
+  ],
+  "delta_v_magnitude_mps": 0.35,
+  "burn_epoch_utc": "2026-09-07T18:11:18.120696Z",
+  "scoring_audit": {
+    "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+    "local_asset": "KesslerSat-1",
+    "local_score": 0.4275,
+    "local_factors": {
+      "cost_lifetime": 0.5,
+      "cost_delta_v": 0.2,
+      "cost_priority": 0.75,
+      "cost_downtime": 0.3
+    },
+    "weights": {
+      "w_lifetime": 0.25,
+      "w_delta_v": 0.35,
+      "w_priority": 0.25,
+      "w_downtime": 0.15
+    }
+  }
+}

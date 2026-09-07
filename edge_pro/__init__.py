@@ -14,6 +14,9 @@ from edge_pro.models import (
     AIDragPrediction,
     SlewCommand,
     PacketValidationError,
+    SpacecraftCapability,
+    CorridorAssessment,
+    ManeuverDecisionPacket,
 )
 from edge_pro.scheduler import (
     ObservationScheduler,
@@ -33,6 +36,26 @@ from edge_pro.vision_interface import (
     MockVisionPipeline,
     DebrisDetection,
 )
+from edge_pro.corridor_interface import (
+    DangerCorridorEvaluator,
+    MockCorridorEvaluator,
+)
+from edge_pro.danger_corridor import (
+    PinholeCorridorProjector,
+    PinholeCorridorEvaluator,
+    liang_barsky_ray_aabb_intersect,
+)
+from edge_pro.decision_engine import (
+    ActiveActiveDecisionEngine,
+    BASELINE_DELTA_V_MPS,
+    BASELINE_LIFETIME_YEARS,
+    BASELINE_DOWNTIME_SEC,
+    PRIORITY_COST_MAP,
+)
+from edge_pro.decision_publisher import (
+    TCPDecisionPublisher,
+    TCPDecisionBroadcastServer,
+)
 from edge_pro.payload_manager import PayloadManager
 
 try:
@@ -40,7 +63,7 @@ try:
 except ImportError:
     OpenCVVisionPipeline = None
 
-__version__ = "2.0.0"
+__version__ = "4.0.0"
 __all__ = [
     "PayloadManager",
     "PayloadConfig",
@@ -50,6 +73,9 @@ __all__ = [
     "AIDragPrediction",
     "SlewCommand",
     "PacketValidationError",
+    "SpacecraftCapability",
+    "CorridorAssessment",
+    "ManeuverDecisionPacket",
     "PayloadStateMachine",
     "PayloadState",
     "StateTransitionError",
@@ -63,4 +89,12 @@ __all__ = [
     "MockVisionPipeline",
     "DebrisDetection",
     "OpenCVVisionPipeline",
+    "DangerCorridorEvaluator",
+    "MockCorridorEvaluator",
+    "PinholeCorridorProjector",
+    "PinholeCorridorEvaluator",
+    "liang_barsky_ray_aabb_intersect",
+    "ActiveActiveDecisionEngine",
+    "TCPDecisionPublisher",
+    "TCPDecisionBroadcastServer",
 ]

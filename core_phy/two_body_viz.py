@@ -100,7 +100,16 @@ class KesslerTestbench:
   def back_calculate_initial_state(self, collision_rv, duration_min):
     """Runs a dedicated time-reversed simulation to determine initial states (t0)
     guaranteeing conjunction at TCA.
+    Strictly caps duration to 24.0 hours (1440 min) to prevent RK4 numerical drift.
     """
+    MAX_BACK_PROP_MINUTES = 24.0 * 60.0  # 1440 minutes = 24.0 hours
+    if duration_min > MAX_BACK_PROP_MINUTES:
+      print(
+          f"[Warning] Capping backward integration duration from {duration_min:.1f}m to "
+          f"{MAX_BACK_PROP_MINUTES:.1f}m (24.0 hours max) to prevent RK4 numerical drift."
+      )
+      duration_min = MAX_BACK_PROP_MINUTES
+
     r_tca, v_tca = collision_rv
 
     # Spawn isolated temp sim
@@ -132,6 +141,40 @@ class KesslerTestbench:
     v_initial = [-v for v in recorder.v_BN_N[-1]]
 
     return r_initial, v_initial
+
+  def load_initial_ephemeris(self, ephemeris_source="shared/initial_ephemeris.json"):
+    """Spawns primary satellite and debris using Master Ground AI Ephemeris vectors.
+    Guarantees ML model and physics engine operate in the exact same geometric universe.
+    """
+    import json
+    if isinstance(ephemeris_source, (str, os.PathLike)):
+      with open(ephemeris_source, "r") as f:
+        data = json.load(f)
+    elif isinstance(ephemeris_source, dict):
+      data = ephemeris_source
+    else:
+      raise ValueError(f"Invalid ephemeris source type: {type(ephemeris_source)}")
+
+    p_info = data["primary_asset"]
+    d_info = data["debris_asset"]
+
+    print(f"Spawning primary asset '{p_info['name']}' from Ground AI ephemeris...")
+    p_sc = self.spawn_spacecraft(
+        p_info["name"],
+        p_info.get("mass_kg", 750.0),
+        rv_vectors=(p_info["r_eci_m"], p_info["v_eci_m_s"]),
+        inertia_diag=[900.0, 800.0, 600.0],
+    )
+
+    print(f"Spawning secondary debris '{d_info['name']}' from Ground AI ephemeris...")
+    d_sc = self.spawn_spacecraft(
+        d_info["name"],
+        d_info.get("mass_kg", 100.0),
+        rv_vectors=(d_info["r_eci_m"], d_info["v_eci_m_s"]),
+        inertia_diag=[10.0, 10.0, 10.0],
+    )
+
+    return p_sc, d_sc
 
 
   def execute(self, sim_time_minutes):

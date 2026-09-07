@@ -22,7 +22,9 @@ class PayloadState(Enum):
     TARGET_SCHEDULED = "TARGET_SCHEDULED" # CDM ingested, observation window queued
     SLEWING = "SLEWING"                   # Slew command pushed to core_phy, ADCS slewing
     TRACKING = "TRACKING"                 # Optical sensor locked on threat, differencing active
-    MISSION_COMPLETE = "MISSION_COMPLETE" # Tracking complete, handoff to avoidance logic
+    DECISION_EVALUATION = "DECISION_EVALUATION"  # Phase 4 Go/No-Go decision matrix evaluation
+    MANEUVER_ARMED = "MANEUVER_ARMED"     # Avoidance burn authorized and dispatched
+    MISSION_COMPLETE = "MISSION_COMPLETE" # Tracking & decision complete, telemetry broadcast
     FAULT = "FAULT"                       # Anomalous state, socket error or invalid contract
 
 
@@ -41,7 +43,22 @@ VALID_TRANSITIONS: Dict[PayloadState, Set[PayloadState]] = {
         PayloadState.FAULT
     },
     PayloadState.SLEWING: {PayloadState.TRACKING, PayloadState.FAULT},
-    PayloadState.TRACKING: {PayloadState.MISSION_COMPLETE, PayloadState.FAULT},
+    PayloadState.TRACKING: {
+        PayloadState.DECISION_EVALUATION,
+        PayloadState.MISSION_COMPLETE,  # Backward compatible direct bypass
+        PayloadState.FAULT
+    },
+    PayloadState.DECISION_EVALUATION: {
+        PayloadState.MANEUVER_ARMED,
+        PayloadState.MISSION_COMPLETE,  # When NO_MANEUVER_REQUIRED
+        PayloadState.STANDBY,
+        PayloadState.FAULT,
+    },
+    PayloadState.MANEUVER_ARMED: {
+        PayloadState.MISSION_COMPLETE,
+        PayloadState.STANDBY,
+        PayloadState.FAULT,
+    },
     PayloadState.MISSION_COMPLETE: {PayloadState.STANDBY, PayloadState.BOOT, PayloadState.FAULT},
     PayloadState.FAULT: {PayloadState.STANDBY, PayloadState.BOOT},
 }

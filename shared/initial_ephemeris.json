@@ -1,0 +1,39 @@
+{
+  "header": {
+    "type": "INITIAL_EPHEMERIS",
+    "authority": "Ground_AI_Node",
+    "timestamp_utc": "2026-09-07T20:14:57Z"
+  },
+  "epoch": {
+    "t_init_utc": "2026-09-08T11:26:29Z",
+    "tca_utc": "2026-09-08T14:32:15Z"
+  },
+  "primary_asset": {
+    "name": "Kessler_Sat_1",
+    "mass_kg": 750.0,
+    "r_eci_m": [
+      -5671008.6,
+      -2424322.61,
+      2837794.65
+    ],
+    "v_eci_m_s": [
+      -103.723,
+      -5739.106,
+      -5082.524
+    ]
+  },
+  "debris_asset": {
+    "name": "Debris_Obj_8492",
+    "mass_kg": 100.0,
+    "r_eci_m": [
+      -5577898.14,
+      -1772595.41,
+      3445599.65
+    ],
+    "v_eci_m_s": [
+      -912.793,
+      -6081.786,
+      -4578.053
+    ]
+  }
+}

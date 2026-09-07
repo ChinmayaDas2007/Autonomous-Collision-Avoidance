@@ -1,0 +1,30 @@
+{
+  "header": {
+    "type": "REFINED_CDM",
+    "timestamp_utc": "2026-09-07T17:24:18.120696Z"
+  },
+  "conjunction_data": {
+    "primary_asset": "KesslerSat-1",
+    "secondary_asset": "Debris_Obj_8492",
+    "time_of_closest_approach": "2026-09-07T18:56:18.120696Z",
+    "observation_window_start_utc": "2026-09-07T17:24:20.120696Z",
+    "miss_distance_km": 0.35
+  },
+  "ai_drag_prediction": {
+    "f107_flux": 148.5,
+    "kp_index": 4.2,
+    "drag_multiplier": 1.15,
+    "ellipsoid_covariance_matrix": [
+      110.4,
+      0.0,
+      0.0,
+      0.0,
+      75.8,
+      0.0,
+      0.0,
+      0.0,
+      42.1
+    ]
+  },
+  "action": "RECOMMEND_OPTICAL_CONFIRMATION"
+}
