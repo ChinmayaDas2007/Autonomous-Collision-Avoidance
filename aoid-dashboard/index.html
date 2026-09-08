@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AOID — Autonomous Operations Intelligence Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════ STATUS STRIP ═══════════════════════════ -->
+<div id="status-strip">
+  <div class="status-metric">
+    <span class="metric-label">Collision prob</span>
+    <span id="val-collision-prob" class="metric-value">0.00e-0</span>
+  </div>
+  <div class="strip-divider"></div>
+
+  <div class="status-metric">
+    <span class="metric-label">DCA</span>
+    <span id="val-dca" class="metric-value">0.00 km</span>
+  </div>
+  <div class="strip-divider"></div>
+
+  <div class="status-metric">
+    <span class="metric-label">TCA</span>
+    <span id="val-tca" class="metric-value">T-00:00</span>
+  </div>
+  <div class="strip-divider"></div>
+
+
+
+  <div class="status-metric">
+    <span class="metric-label">Δv required</span>
+    <span id="val-dv" class="metric-value">0.00 m/s</span>
+  </div>
+  <div class="strip-divider"></div>
+
+  <div class="status-metric">
+    <span class="metric-label">Latency</span>
+    <span id="val-latency" class="metric-value">0 ms</span>
+  </div>
+
+  <div class="strip-spacer"></div>
+
+  <div class="strip-sources">
+    <span id="src-orbit" class="source-dot offline">ORBIT</span>
+    <span id="src-vision" class="source-dot offline">VISION</span>
+    <span id="src-drag" class="source-dot offline">DRAG</span>
+  </div>
+
+  <div class="strip-mode-block">
+    <span id="mode-badge" class="mode-badge">● OFFLINE</span>
+    <div class="playback-speed">
+      <button class="speed-btn" data-speed="1" aria-pressed="true">1×</button>
+      <button class="speed-btn" data-speed="2" aria-pressed="false">2×</button>
+      <button class="speed-btn" data-speed="4" aria-pressed="false">4×</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ CONSOLE ═══════════════════════════ -->
+<div id="console">
+
+  <!-- ── LEFT COLUMN ── -->
+  <div id="col-left">
+
+    <!-- Trajectory / maneuver panel -->
+    <div id="panel-trajectory" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Trajectory &amp; maneuver</span>
+        <div class="panel-header-right">
+          <span class="panel-meta">Epoch —</span>
+          <span class="panel-meta-sep">|</span>
+          <span id="traj-objects" class="panel-meta">SAT-A · DEB-7</span>
+          <span class="panel-meta-sep">|</span>
+          <span class="panel-meta">ECI frame</span>
+        </div>
+      </div>
+      <div id="trajectory-body" class="panel-body">
+        <canvas id="canvas-trajectory"></canvas>
+
+        <div class="tca-annotation">
+          <span class="annot-label">TCA in</span>
+          <span id="annot-tca-value" class="annot-value">T-00:00</span>
+        </div>
+
+        <div class="traj-legend">
+          <div class="legend-item">
+            <span class="legend-swatch swatch-sat"></span>
+            <span class="legend-label">Satellite</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch swatch-debris"></span>
+            <span class="legend-label">Debris</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch swatch-ellipsoid"></span>
+            <span class="legend-label">Error ellipsoid</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch swatch-dv"></span>
+            <span class="legend-label">Δv burn vector</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optical feeds row -->
+    <div id="optical-row">
+      <div id="panel-raw" class="panel optical-panel">
+        <div class="panel-header">
+          <span class="panel-title">Star tracker — raw</span>
+          <div class="panel-header-right">
+            <span id="raw-frame-id" class="panel-meta">Frame #0</span>
+          </div>
+        </div>
+        <div class="panel-body optical-body">
+          <canvas id="canvas-raw"></canvas>
+          <span id="raw-status" class="optical-overlay-tl">● SIMULATED FEED</span>
+        </div>
+      </div>
+
+      <div id="panel-processed" class="panel optical-panel">
+        <div class="panel-header">
+          <span class="panel-title">Star tracker — processed</span>
+          <div class="panel-header-right">
+            <span id="proc-conf" class="panel-meta"></span>
+            <span class="panel-meta-sep">|</span>
+            <span id="proc-detections" class="panel-meta">No detections</span>
+          </div>
+        </div>
+        <div class="panel-body optical-body">
+          <canvas id="canvas-processed"></canvas>
+          <span id="proc-status" class="optical-overlay-tl">● SIMULATED FEED</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT COLUMN ── -->
+  <div id="col-right">
+
+    <!-- Event log -->
+    <div id="panel-log" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Event log</span>
+        <div class="panel-header-right">
+          <span id="log-entry-count" class="panel-meta">0 entries</span>
+          <button id="btn-clear-log" class="log-clear-btn">CLR</button>
+        </div>
+      </div>
+      <div id="event-log-body" class="panel-body"></div>
+    </div>
+
+    <!-- Decision matrix -->
+    <div id="panel-matrix" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Decision matrix</span>
+        <div class="panel-header-right">
+          <span class="panel-meta">Active-Active conjunction</span>
+        </div>
+      </div>
+      <div id="matrix-body" class="panel-body">
+
+        <div class="matrix-criterion">
+          <div class="criterion-header">
+            <span class="criterion-label">Fuel reserve</span>
+            <span id="wt-fuel" class="criterion-weight">30%</span>
+          </div>
+          <div class="criterion-bars">
+            <div class="bar-row">
+              <span class="bar-sat-label">SELF</span>
+              <span class="bar-track"><span id="bar-fuel-a" class="bar-fill bar-accent" style="width:0%"></span></span>
+              <span id="val-fuel-a" class="bar-val">0.00</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-sat-label">PEER</span>
+              <span class="bar-track"><span id="bar-fuel-b" class="bar-fill bar-dim" style="width:0%"></span></span>
+              <span id="val-fuel-b" class="bar-val">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="matrix-criterion">
+          <div class="criterion-header">
+            <span class="criterion-label">Remaining lifetime</span>
+            <span id="wt-life" class="criterion-weight">25%</span>
+          </div>
+          <div class="criterion-bars">
+            <div class="bar-row">
+              <span class="bar-sat-label">SELF</span>
+              <span class="bar-track"><span id="bar-life-a" class="bar-fill bar-accent" style="width:0%"></span></span>
+              <span id="val-life-a" class="bar-val">0.00</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-sat-label">PEER</span>
+              <span class="bar-track"><span id="bar-life-b" class="bar-fill bar-dim" style="width:0%"></span></span>
+              <span id="val-life-b" class="bar-val">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="matrix-criterion">
+          <div class="criterion-header">
+            <span class="criterion-label">Mission priority</span>
+            <span id="wt-prio" class="criterion-weight">25%</span>
+          </div>
+          <div class="criterion-bars">
+            <div class="bar-row">
+              <span class="bar-sat-label">SELF</span>
+              <span class="bar-track"><span id="bar-prio-a" class="bar-fill bar-accent" style="width:0%"></span></span>
+              <span id="val-prio-a" class="bar-val">0.00</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-sat-label">PEER</span>
+              <span class="bar-track"><span id="bar-prio-b" class="bar-fill bar-dim" style="width:0%"></span></span>
+              <span id="val-prio-b" class="bar-val">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="matrix-criterion">
+          <div class="criterion-header">
+            <span class="criterion-label">Downtime cost</span>
+            <span id="wt-down" class="criterion-weight">20%</span>
+          </div>
+          <div class="criterion-bars">
+            <div class="bar-row">
+              <span class="bar-sat-label">SELF</span>
+              <span class="bar-track"><span id="bar-down-a" class="bar-fill bar-accent" style="width:0%"></span></span>
+              <span id="val-down-a" class="bar-val">0.00</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-sat-label">PEER</span>
+              <span class="bar-track"><span id="bar-down-b" class="bar-fill bar-dim" style="width:0%"></span></span>
+              <span id="val-down-b" class="bar-val">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="matrix-verdict">
+          <span class="verdict-arrow">→</span>
+          <span id="verdict-text" class="verdict-text">No maneuver required — corridor clear</span>
+          <span id="verdict-score" class="verdict-composite">Score: 0.000</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Decision tree -->
+    <div id="panel-dtree" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Decision tree</span>
+        <div class="panel-header-right">
+          <span id="dtree-node-count" class="panel-meta">0 nodes</span>
+          <button id="btn-clear-dtree" class="log-clear-btn">CLR</button>
+        </div>
+      </div>
+      <div id="dtree-body" class="panel-body dtree-body"></div>
+    </div>
+
+    <!-- System override -->
+    <div id="panel-override" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">System override</span>
+        <div class="panel-header-right">
+          <span id="override-status-label" class="panel-meta">Autonomous mode active</span>
+        </div>
+      </div>
+      <div id="override-body">
+        <div class="override-mode-row">
+          <span id="label-auto" class="override-mode-label label-active">Autonomous</span>
+
+          <div id="switch-housing" class="switch-housing" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle autonomous or manual override mode">
+            <div class="switch-track">
+              <span class="switch-indicator left"></span>
+              <span class="switch-pill"></span>
+              <span class="switch-indicator right"></span>
+            </div>
+          </div>
+
+          <span id="label-manual" class="override-mode-label">Manual</span>
+        </div>
+
+        <div id="burn-actions" class="burn-actions" aria-hidden="true">
+          <button id="btn-approve-burn" class="btn-action btn-approve" disabled>Approve burn</button>
+          <button id="btn-hold-burn" class="btn-action btn-hold" disabled>Hold</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+<!-- Load order matters: ui.js first (stubs + DOM handlers),
+     then state.js (canonical store), then data sources,
+     then canvas.js (subscribes to state for rendering).
+
+     mock.js is DEV-ONLY and intentionally not loaded here — it
+     drives AppState on its own 1s ticker and will fight with
+     playback.js if both run at once (both write tca_s, frame_id,
+     detections independently, causing visible flicker/jitter).
+     playback.js already has its own embedded fallback scenario
+     if data/playback_log.json fails to load, so it fully covers
+     the "render something convincing with zero backend" case.
+
+     To use mock.js instead (e.g. while iterating on layout before
+     a real playback_log.json exists), swap the two lines below. -->
+<script src="js/ui.js"></script>
+<script src="js/state.js"></script>
+<!-- <script src="js/mock.js"></script> -->
+<script src="js/ingestion.js"></script>
+<script src="js/playback.js"></script>
+<script src="js/canvas.js"></script>
+</body>
+</html>

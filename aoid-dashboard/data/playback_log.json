@@ -1,0 +1,206 @@
+[
+  {
+    "frame_id": 41225,
+    "tca_s": 0,
+    "collision_prob": 0.0087,
+    "dca_km": 0.32,
+    "fuel_pct": 60.8,
+    "dv_mag_ms": 0.00,
+    "dv_vector": [0.00, 0.00, 0.00],
+    "sat": { "id": "SAT-A", "r": [4211.0, 3120.7, 4520.6], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4211.3, 3120.8, 4520.7], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.31, "drag_sigma": 0.11, "ellipsoid": { "along": 1.70, "cross": 0.42, "radial": 0.26 },
+    "detections": [{ "cx": 0.493, "cy": 0.389, "w": 0.070, "h": 0.040, "conf": 0.96 }],
+    "decision": {
+      "status": "EXECUTE_BURN",
+      "go_no_go": "GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.777,
+          "factors": {
+            "cost_lifetime": 0.91,
+            "cost_delta_v": 0.78,
+            "cost_priority": 0.60,
+            "cost_downtime": 0.85
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 1/6: TCA Zero-Point reached. Satellites co-located at DCA 0.32 km. Pc = 8.7e-3.", "severity": "threat" }
+  },
+  {
+    "frame_id": 41220,
+    "tca_s": 120,
+    "collision_prob": 0.0087,
+    "dca_km": 0.32,
+    "fuel_pct": 62.2,
+    "dv_mag_ms": 1.20,
+    "dv_vector": [0.12, -0.45, 0.88],
+    "sat": { "id": "SAT-A", "r": [4211.0, 3120.7, 4520.6], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4211.3, 3120.8, 4520.7], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.31, "drag_sigma": 0.11, "ellipsoid": { "along": 1.70, "cross": 0.42, "radial": 0.26 },
+    "detections": [{ "cx": 0.490, "cy": 0.386, "w": 0.068, "h": 0.039, "conf": 0.94 }],
+    "decision": {
+      "status": "EXECUTE_BURN",
+      "go_no_go": "GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.777,
+          "factors": {
+            "cost_lifetime": 0.91,
+            "cost_delta_v": 0.78,
+            "cost_priority": 0.60,
+            "cost_downtime": 0.85
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 2/6: Tracing \u0394v maneuver execution (\u0394v = 1.20 m/s impulse vector active).", "severity": "warning" }
+  },
+  {
+    "frame_id": 41215,
+    "tca_s": 300,
+    "collision_prob": 0.0076,
+    "dca_km": 0.58,
+    "fuel_pct": 62.3,
+    "dv_mag_ms": 1.20,
+    "dv_vector": [0.12, -0.45, 0.88],
+    "sat": { "id": "SAT-A", "r": [4210.9, 3120.6, 4520.5], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4211.4, 3120.8, 4520.7], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.30, "drag_sigma": 0.11, "ellipsoid": { "along": 1.65, "cross": 0.40, "radial": 0.25 },
+    "detections": [{ "cx": 0.485, "cy": 0.382, "w": 0.066, "h": 0.038, "conf": 0.92 }],
+    "decision": {
+      "status": "EXECUTE_BURN",
+      "go_no_go": "GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.777,
+          "factors": {
+            "cost_lifetime": 0.91,
+            "cost_delta_v": 0.78,
+            "cost_priority": 0.60,
+            "cost_downtime": 0.85
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 3/6: Matrix selection node reached \u2014 SAT-A composite score 0.777.", "severity": "warning" }
+  },
+  {
+    "frame_id": 41210,
+    "tca_s": 480,
+    "collision_prob": 0.0052,
+    "dca_km": 0.92,
+    "fuel_pct": 62.3,
+    "dv_mag_ms": 0.00,
+    "dv_vector": [0.00, 0.00, 0.00],
+    "sat": { "id": "SAT-A", "r": [4210.8, 3120.5, 4520.4], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4211.7, 3121.0, 4521.0], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.27, "drag_sigma": 0.10, "ellipsoid": { "along": 1.55, "cross": 0.36, "radial": 0.23 },
+    "detections": [{ "cx": 0.480, "cy": 0.378, "w": 0.064, "h": 0.037, "conf": 0.90 }],
+    "decision": {
+      "status": "MONITOR_PEER_MANEUVER",
+      "go_no_go": "NO_GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.654,
+          "factors": {
+            "cost_lifetime": 0.91,
+            "cost_delta_v": 0.78,
+            "cost_priority": 0.60,
+            "cost_downtime": 0.85
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 4/6: Unwinding threat trajectory \u2014 DCA expanding backward to 0.92 km.", "severity": "info" }
+  },
+  {
+    "frame_id": 41205,
+    "tca_s": 660,
+    "collision_prob": 0.0028,
+    "dca_km": 1.40,
+    "fuel_pct": 62.3,
+    "dv_mag_ms": 0.00,
+    "dv_vector": [0.00, 0.00, 0.00],
+    "sat": { "id": "SAT-A", "r": [4210.7, 3120.4, 4520.3], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4212.1, 3121.3, 4521.4], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.24, "drag_sigma": 0.09, "ellipsoid": { "along": 1.48, "cross": 0.33, "radial": 0.21 },
+    "detections": [{ "cx": 0.475, "cy": 0.373, "w": 0.062, "h": 0.036, "conf": 0.88 }],
+    "decision": {
+      "status": "NO_MANEUVER_REQUIRED",
+      "go_no_go": "NO_GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.412,
+          "factors": {
+            "cost_lifetime": 0.48,
+            "cost_delta_v": 0.35,
+            "cost_priority": 0.60,
+            "cost_downtime": 0.42
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 5/6: Atmospheric drag uncertainty origin point (Cd = 2.24 \u00b1 0.09).", "severity": "info" }
+  },
+  {
+    "frame_id": 41200,
+    "tca_s": 900,
+    "collision_prob": 0.0010,
+    "dca_km": 2.14,
+    "fuel_pct": 62.4,
+    "dv_mag_ms": 0.00,
+    "dv_vector": [0.00, 0.00, 0.00],
+    "sat": { "id": "SAT-A", "r": [4210.5, 3120.2, 4520.1], "v": [-3.85, 5.92, 2.41] },
+    "debris": { "id": "DEB-7", "r": [4212.6, 3121.8, 4521.9], "v": [4.12, -5.10, -3.15] },
+    "cd": 2.21, "drag_sigma": 0.08, "ellipsoid": { "along": 1.40, "cross": 0.30, "radial": 0.20 },
+    "detections": [{ "cx": 0.470, "cy": 0.370, "w": 0.060, "h": 0.035, "conf": 0.85 }],
+    "decision": {
+      "status": "NO_MANEUVER_REQUIRED",
+      "go_no_go": "NO_GO",
+      "target_asset": "DEB-7",
+      "conjunction_type": "SPACECRAFT_VS_DEBRIS",
+      "scores": {
+        "self": {
+          "asset_id": "SAT-A",
+          "score": 0.211,
+          "factors": {
+            "cost_lifetime": 0.22,
+            "cost_delta_v": 0.18,
+            "cost_priority": 0.30,
+            "cost_downtime": 0.21
+          }
+        },
+        "peer": null
+      },
+      "weights": { "w_lifetime": 0.25, "w_delta_v": 0.30, "w_priority": 0.25, "w_downtime": 0.20 }
+    },
+    "event": { "tag": "RECONSTRUCT", "msg": "RECONSTRUCTION BEAT 6/6: Initial nominal tracking state reached prior to conjunction alert.", "severity": "nominal" }
+  }
+]

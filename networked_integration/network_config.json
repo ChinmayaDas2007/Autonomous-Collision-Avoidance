@@ -1,0 +1,13 @@
+{
+    "LAPTOP_1_CORE_IP": "192.168.1.10",
+    "LAPTOP_2_EDGE_IP": "192.168.1.11",
+    "LAPTOP_3_GROUND_IP": "192.168.1.12",
+    "LAPTOP_4_UI_IP": "192.168.1.13",
+    "PORTS": {
+        "core_cmd": 15556,
+        "core_stream": 15000,
+        "edge_ingest": 15555,
+        "ui_telemetry": 16000,
+        "ui_video": 16001
+    }
+}

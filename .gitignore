@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+skyfield_data/
+*.tmp*
+*.tmp.jpg
+*.bsp
+gnd_ops/shared/
+shared/initial_ephemeris.json
+__pycache__/
+*.pyc
+e2e_out.log
