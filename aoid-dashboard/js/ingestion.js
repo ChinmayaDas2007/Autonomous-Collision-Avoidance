@@ -25,8 +25,8 @@
      HOST CONFIGURATION — edit these three lines only
   ═══════════════════════════════════════════════════════════ */
   const HOSTS = {
-    orbit:  '192.168.1.10',   // core_phy   (fsw_server.py)
-    vision: '192.168.1.11',   // edge_pro   (payload_manager.py)
+    orbit:  '172.16.130.98',   // core_phy   (fsw_server.py)
+    vision: '172.16.130.98',   // edge_pro   (payload_manager.py)
     drag:   '192.168.1.12',   // gnd_ops    (ground_ai_node.py)
   };
 
