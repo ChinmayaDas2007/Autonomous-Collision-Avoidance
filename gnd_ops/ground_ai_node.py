@@ -1062,6 +1062,8 @@ def main():
         print("=" * 60)
         print(json.dumps(pkt, indent=2))
         print("=" * 60 + "\n")
+        print("[*] Keeping process alive for 15s to allow UI WebSockets to flush...")
+        time.sleep(15)
 
 
 if __name__ == "__main__":
