@@ -416,8 +416,20 @@ class PayloadManager:
                     logger.warning(f"Could not encode HUD for broadcast: {e}")
 
             scores_data = getattr(decision_packet, "debug_scores", None) or getattr(decision_packet, "scoring_audit", None) or {}
-            self_score = scores_data.get("self") if isinstance(scores_data, dict) else {}
-            peer_score = scores_data.get("peer") if isinstance(scores_data, dict) else {}
+
+            if isinstance(scores_data, dict) and scores_data.get("conjunction_type") == "SPACECRAFT_VS_DEBRIS":
+                self_score = {
+                    "asset_id": scores_data.get("local_asset"),
+                    "score": scores_data.get("local_score"),
+                    "factors": scores_data.get("local_factors", {}),
+                }
+                peer_score = None
+            elif isinstance(scores_data, dict):
+                self_score = scores_data.get("self")
+                peer_score = scores_data.get("peer")
+            else:
+                self_score = {}
+                peer_score = {}
 
             self.dashboard_ws.broadcast({
                 "type": "vision",
@@ -430,6 +442,8 @@ class PayloadManager:
                 "target_asset": decision_packet.target_asset,
                 "delta_v_vector_mps": decision_packet.delta_v_vector_mps,
                 "delta_v_magnitude_mps": decision_packet.delta_v_magnitude_mps,
+                "conjunction_type": scores_data.get("conjunction_type") if isinstance(scores_data, dict) else None,
+                "weights": scores_data.get("weights", {}) if isinstance(scores_data, dict) else {},
                 "scores": {
                     "self": self_score or {},
                     "peer": peer_score or {}
