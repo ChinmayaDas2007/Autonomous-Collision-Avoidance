@@ -14,7 +14,9 @@ Usage:
 import argparse
 import asyncio
 from datetime import datetime, timezone
+import json
 import logging
+from pathlib import Path
 import signal
 import sys
 import base64
@@ -405,6 +407,14 @@ class PayloadManager:
 
             # Broadcast decision packet to PS 5 UI Dashboard & core_phy
             await self.decision_publisher.publish_decision(decision_packet)
+
+            # Persist latest maneuver decision atomically for local satellite dashboard
+            try:
+                decision_file = Path(self.config.processed_frames_dir).parent / "maneuver_decision.json"
+                with open(decision_file, "w") as f:
+                    json.dump(decision_packet.to_dict(), f, indent=2)
+            except Exception as e:
+                logger.warning(f"Could not persist maneuver_decision.json: {e}")
             
             # Broadcast to 4th laptop over WebSocket
             b64_img = ""

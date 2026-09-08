@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Project Kessler — Local Satellite Mission HUD Executable Wrapper
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON_EXEC="/Users/chinmaya/bsk_env/bin/python3"
+
+if [ ! -f "$PYTHON_EXEC" ]; then
+    PYTHON_EXEC="python3"
+fi
+
+exec "$PYTHON_EXEC" "$SCRIPT_DIR/local_dash_sat.py" "$@"
