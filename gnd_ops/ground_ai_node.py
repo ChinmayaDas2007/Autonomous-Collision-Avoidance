@@ -22,6 +22,10 @@ import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from shared.ws_broadcast import DashboardBroadcaster
+
 import requests
 
 # ── Optional: SGP4 ────────────────────────────────────────────────────────────
@@ -879,6 +883,9 @@ class GroundAINode:
         self._thread: Optional[threading.Thread] = None
         self._running = False
         self.last_packet: Optional[dict] = None
+        
+        self.dashboard = DashboardBroadcaster(port=8003)
+        self.dashboard.run_in_background()
 
     def run_once(
         self,
@@ -932,6 +939,22 @@ class GroundAINode:
             uplink_port=uplink_port,
         )
         self.last_packet = packet
+        
+        # Broadcast to UI Dashboard
+        self.dashboard.broadcast({
+            "type": "drag",
+            "ts": datetime.now(timezone.utc).timestamp(),
+            "cd": 2.2, # Hardcoded fallback if not in feature builder
+            "drag_sigma": 0.1, 
+            "ellipsoid": {
+                "along": packet.get("ai_drag_prediction", {}).get("ellipsoid_covariance_matrix", [0,0,0])[0],
+                "cross": packet.get("ai_drag_prediction", {}).get("ellipsoid_covariance_matrix", [0,0,0])[1],
+                "radial": packet.get("ai_drag_prediction", {}).get("ellipsoid_covariance_matrix", [0,0,0])[2]
+            },
+            "time_of_closest_approach": packet.get("conjunction_data", {}).get("time_of_closest_approach", ""),
+            "miss_distance_km": packet.get("conjunction_data", {}).get("miss_distance_km", 0.0)
+        })
+        
         return packet
 
     def start(

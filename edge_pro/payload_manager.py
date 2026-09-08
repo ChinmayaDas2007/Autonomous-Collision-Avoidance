@@ -17,6 +17,11 @@ from datetime import datetime, timezone
 import logging
 import signal
 import sys
+import base64
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from shared.ws_broadcast import DashboardBroadcaster
+
 from typing import Optional
 
 from edge_pro.config import PayloadConfig
@@ -94,6 +99,9 @@ class PayloadManager:
             host=self.config.dashboard_host,
             port=self.config.dashboard_port,
         )
+        
+        self.dashboard_ws = DashboardBroadcaster(port=8002)
+        self.dashboard_ws.run_in_background()
 
         # 7. TCP Networking Nodes
         self.ingest_server = TCPIngestServer(
@@ -397,6 +405,32 @@ class PayloadManager:
 
             # Broadcast decision packet to PS 5 UI Dashboard & core_phy
             await self.decision_publisher.publish_decision(decision_packet)
+            
+            # Broadcast to 4th laptop over WebSocket
+            b64_img = ""
+            if os.path.exists(hud_path):
+                try:
+                    with open(hud_path, "rb") as f:
+                        b64_img = "data:image/jpeg;base64," + base64.b64encode(f.read()).decode('utf-8')
+                except Exception as e:
+                    logger.warning(f"Could not encode HUD for broadcast: {e}")
+
+            self.dashboard_ws.broadcast({
+                "type": "vision",
+                "ts": datetime.now(timezone.utc).timestamp(),
+                "frame_id": 0,
+                "corridor_intersected": is_hit,
+                "hud_frame_path": b64_img,
+                "decision": decision_packet.decision,
+                "decision_status": "GO" if decision_packet.responsibility == "self" else "NO_GO",
+                "target_asset": decision_packet.target_asset,
+                "delta_v_vector_mps": decision_packet.delta_v_vector_mps,
+                "delta_v_magnitude_mps": decision_packet.delta_v_magnitude_mps,
+                "scores": {
+                    "self": decision_packet.debug_scores.get("self", {}),
+                    "peer": decision_packet.debug_scores.get("peer", {})
+                }
+            })
 
             # 8. Mission Complete & Reset
             self.fsm.transition_to(
