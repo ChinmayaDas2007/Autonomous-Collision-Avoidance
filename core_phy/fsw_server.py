@@ -22,12 +22,11 @@ import socket
 import struct
 import sys
 import threading
-import sys
-import os
+import time
+from typing import Optional
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from shared.ws_broadcast import DashboardBroadcaster
-
-from typing import Optional
 
 try:
     import cv2

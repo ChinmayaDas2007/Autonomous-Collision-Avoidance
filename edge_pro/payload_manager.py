@@ -415,6 +415,10 @@ class PayloadManager:
                 except Exception as e:
                     logger.warning(f"Could not encode HUD for broadcast: {e}")
 
+            scores_data = getattr(decision_packet, "debug_scores", None) or getattr(decision_packet, "scoring_audit", None) or {}
+            self_score = scores_data.get("self") if isinstance(scores_data, dict) else {}
+            peer_score = scores_data.get("peer") if isinstance(scores_data, dict) else {}
+
             self.dashboard_ws.broadcast({
                 "type": "vision",
                 "ts": datetime.now(timezone.utc).timestamp(),
@@ -427,8 +431,8 @@ class PayloadManager:
                 "delta_v_vector_mps": decision_packet.delta_v_vector_mps,
                 "delta_v_magnitude_mps": decision_packet.delta_v_magnitude_mps,
                 "scores": {
-                    "self": decision_packet.debug_scores.get("self", {}),
-                    "peer": decision_packet.debug_scores.get("peer", {})
+                    "self": self_score or {},
+                    "peer": peer_score or {}
                 }
             })
 

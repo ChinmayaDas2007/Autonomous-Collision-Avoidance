@@ -1,32 +1,24 @@
 {
   "header": {
     "type": "REFINED_CDM",
-    "timestamp_utc": "2026-09-07T22:45:48Z"
+    "timestamp_utc": "2026-09-08T04:41:29.358834Z"
   },
   "conjunction_data": {
     "primary_asset": "Kessler_Sat_1",
     "secondary_asset": "Debris_Obj_8492",
-    "time_of_closest_approach": "2026-09-08T01:50:46Z",
-    "observation_window_start_utc": "2026-09-07T22:45:00Z",
+    "time_of_closest_approach": "2026-09-08T07:46:29.358834Z",
+    "observation_window_start_utc": "2026-09-08T04:41:30.358834Z",
     "miss_distance_km": 0.35
   },
   "ai_drag_prediction": {
-    "f107_flux": 110.0,
-    "kp_index": 4.0,
-    "drag_multiplier": 0.8844,
+    "f107_flux": 165.4,
+    "kp_index": 4.8,
+    "drag_multiplier": 1.25,
     "ellipsoid_covariance_matrix": [
-      44.22,
-      132.67,
-      44.22
+      110.0,
+      45.0,
+      45.0
     ]
   },
-  "action": "RECOMMEND_OPTICAL_CONFIRMATION",
-  "_audit": {
-    "stale_data": false,
-    "bc_defaulted": true,
-    "sgp4_used": true,
-    "skyfield_used": false,
-    "is_in_umbra": false,
-    "orbital_period_min": 92.8806
-  }
+  "action": "RECOMMEND_OPTICAL_CONFIRMATION"
 }
