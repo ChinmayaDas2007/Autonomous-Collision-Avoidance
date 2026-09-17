@@ -11,3 +11,5 @@ shared/initial_ephemeris.json
 __pycache__/
 *.pyc
 e2e_out.log
+Vizard.app/
+*.bin

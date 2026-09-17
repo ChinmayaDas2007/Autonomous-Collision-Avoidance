@@ -2,7 +2,7 @@
   "header": {
     "type": "INITIAL_EPHEMERIS",
     "authority": "Ground_AI_Node",
-    "timestamp_utc": "2026-09-08T06:12:55Z"
+    "timestamp_utc": "2026-09-17T08:41:44Z"
   },
   "epoch": {
     "t_init_utc": "2026-09-08T11:26:29Z",
